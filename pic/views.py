@@ -19,7 +19,7 @@ def runAPI(request):
 
 def run(request):
     import sys
-    sys.path.append("/home/ubuntu/api1/yolo/pic/")
+    sys.path.append("/home/rajath/api1/yolo/pic/")
     from pic.oda import object_detection_app as oap
     #oap()
     #os.system('python /home/ubuntu/api1/yolo/pic/oda/object_detection_app.py')
