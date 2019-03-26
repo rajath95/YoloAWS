@@ -77,30 +77,38 @@ def worker(input_q, output_q):
 
         sess = tf.Session(graph=detection_graph)
 
-    fps = FPS().start()
-    while True:
-        fps.update()
-        frame = input_q.get()
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        output_q.put(detect_objects(frame_rgb, sess, detection_graph))
+    #fps = FPS().start()
+    #while True:
+    #fps.update()
+    #    frame = input_q.get()
+#   frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    #output_q.put(detect_objects(frame_rgb, sess, detection_graph))
 
-    fps.stop()
+    #fps.stop()
+
+    frame=cv2.imread(input_q)
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    #output_q.put(detect_objects(frame_rgb, sess, detection_graph))
+    saved_image=detect_objects(frame_rgb,sess,detection_graph)
+    cv2.imwrite(output_q,saved_image)
+
     sess.close()
 
-logger = multiprocessing.log_to_stderr()
-logger.setLevel(multiprocessing.SUBDEBUG)
+#logger = multiprocessing.log_to_stderr()
+#logger.setLevel(multiprocessing.SUBDEBUG)
 
-input_q = Queue(maxsize=5)
-output_q = Queue(maxsize=5)
-pool = Pool(2, worker, (input_q, output_q))
-print('Reading from webcam.')
-video_capture = WebcamVideoStream(src=0,
-                                      width=480,
-                                      height=360).start()
+input_q = 'ipl.png'
+output_q = 'cup2.jpeg'
+#pool = Pool(2, worker, (input_q, output_q))
+worker(input_q,output_q)
+print('Image captioning completed')
+#video_capture = WebcamVideoStream(src=0,
+#                                      width=480,
+#                                      height=360).start()
 
 
-fps = FPS().start()
-
+#fps = FPS().start()
+"""
 while True:  # fps._numFrames < 120
     frame = video_capture.read()
     input_q.put(frame)
@@ -113,10 +121,11 @@ while True:  # fps._numFrames < 120
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+"""
 
-fps.stop()
-print('[INFO] elapsed time (total): {:.2f}'.format(fps.elapsed()))
-print('[INFO] approx. FPS: {:.2f}'.format(fps.fps()))
-pool.terminate()
-video_capture.stop()
-cv2.destroyAllWindows()
+#fps.stop()
+#print('[INFO] elapsed time (total): {:.2f}'.format(fps.elapsed()))
+#print('[INFO] approx. FPS: {:.2f}'.format(fps.fps()))
+#pool.terminate()
+#video_capture.stop()
+#cv2.destroyAllWindows()
