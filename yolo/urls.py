@@ -16,12 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .views import hello
-from pic.views import run,runAPI
+from pic.views import run,runAPI,sample_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/',hello),
     path('run/',run),
     path('yoloapp',runAPI),
+    path('testrun/',sample_view),
 
 ]

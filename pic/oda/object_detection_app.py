@@ -74,9 +74,14 @@ def worker(input_q, output_q):
             serialized_graph = fid.read()
             od_graph_def.ParseFromString(serialized_graph)
             tf.import_graph_def(od_graph_def, name='')
-
         sess = tf.Session(graph=detection_graph)
 
+    frame=cv2.imread(input_q)
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    saved_image=detect_objects(frame_rgb,sess,detection_graph)
+    cv2.imwrite(output_q,saved_image)
+    sess.close()
+    #output_q.put(detect_objects(frame_rgb, sess, detection_graph))
     #fps = FPS().start()
     #while True:
     #fps.update()
@@ -86,22 +91,24 @@ def worker(input_q, output_q):
 
     #fps.stop()
 
-    frame=cv2.imread(input_q)
-    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    #output_q.put(detect_objects(frame_rgb, sess, detection_graph))
-    saved_image=detect_objects(frame_rgb,sess,detection_graph)
-    cv2.imwrite(output_q,saved_image)
-
-    sess.close()
-
 #logger = multiprocessing.log_to_stderr()
 #logger.setLevel(multiprocessing.SUBDEBUG)
 
-input_q = 'ipl.png'
-output_q = 'cup2.jpeg'
-#pool = Pool(2, worker, (input_q, output_q))
-worker(input_q,output_q)
-print('Image captioning completed')
+def decode(img_string):
+    import base64
+    image_64_decode = base64.decodestring(img_string)
+    image_result = open('original_image.jpeg', 'wb')
+    image_result.write(image_64_decode)
+    image_result.close()
+
+
+
+def run(img_string):
+    decode(img_string)
+    input_q = 'original_image.jpeg'
+    output_q = 'captioned_image.jpeg' #pool = Pool(2, worker, (input_q, output_q))
+    worker(input_q,output_q)
+    print('Image captioning completed')
 #video_capture = WebcamVideoStream(src=0,
 #                                      width=480,
 #                                      height=360).start()
